@@ -1,13 +1,12 @@
-const CAT_API = 'https://catfact.ninja/fact'
-
 const template = document.createElement('template')
 
 template.innerHTML = `
 <div>
-  <h2>Cat-app</h2>
-  <h4>Did you know?</h4>
-  <p id="catFact"></p>
-  <button class="nextButton">Another fact</button>
+  <h2>Hello there</h2>
+  <h4>Please enter your name</h4>
+  <input type="text" id="name">
+  <button id="enterButton">Enter name</button>
+  <p id="greeting"></p>
 </div>
 
 <style>
@@ -38,12 +37,14 @@ customElements.define('hello-app',
     /**
      * A button to show the next cat fact.
      */
-    #nextButton
+    #enterButton
 
     /**
-     * Place holder for the cat facts.
+     * Place holder for a surprise greeting.
      */
-    #catFactElement
+    #greeting
+    
+    #name
 
     /**
      * Lifecycle method called when the component is connected to the DOM.
@@ -51,28 +52,29 @@ customElements.define('hello-app',
     connectedCallback () {
       this.attachShadow({ mode: 'open' })
       this.shadowRoot.appendChild(template.content.cloneNode(true))
-      this.loadCatFact()
-      this.#nextButton = this.shadowRoot.querySelector('.nextButton')
-      this.#catFactElement = this.shadowRoot.querySelector('#catFact')
+      this.loadGreeting()
+      this.#enterButton = this.shadowRoot.querySelector('#enterButton')
+      this.#name = this.shadowRoot.querySelector('#name')
+      this.#greeting = this.shadowRoot.querySelector('#greeting')
 
-      this.#nextButton.addEventListener('click', () => this.loadCatFact())
+      this.#enterButton.addEventListener('click', () => {
+        const name = this.#name.value
+        this.loadGreeting(name)
+      })
     }
 
     /**
      * Loads a random cat fact from the API and displays it in the component.
      */
-    async loadCatFact () {
+    async loadGreeting (name) {
+      if (name != '') {
       try {
-        const response = await fetch(CAT_API)
-        const data = await response.json()
-
-        if (response.ok) {
-          this.#catFactElement.textContent = data.fact
-        } else {
-          console.error('Failed to fetch cat fact:', response.status, data.message)
-        }
+        this.#greeting.textContent = 'Hello there ' + name + ', hope you are having a great day'
       } catch (error) {
-        console.error('Error occurred while fetching cat fact:', error)
+        console.error(error)
+      }
+      } else {
+        this.#greeting.textContent = 'Hmm, that is not much of a name...'
       }
     }
   })
